@@ -23,6 +23,11 @@ on:
         default: ubuntu-latest
         description: 'Build platform (i.e.: runs-on) for job'
         type: string
+      dev-version:
+        required: false
+        default: ${{ inputs.version }}
+        description: "Dev version to bake into the binary"
+        type: string
       version:
         required: true
         description: "Version to produce"
@@ -43,7 +48,7 @@ defaults:
 
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  PULUMI_VERSION: ${{ inputs.version }}
+  PULUMI_VERSION: ${{ inputs.dev-version }}
 
 jobs:
   build:
@@ -51,7 +56,7 @@ jobs:
     runs-on: ${{ inputs.build-platform }}
 
     env:
-      PULUMI_VERSION: ${{ inputs.version }}
+      PULUMI_VERSION: ${{ inputs.dev-version }}
 
     permissions:
       id-token: write
@@ -72,15 +77,15 @@ jobs:
           command -v tar
           tar --version
       - uses: actions/checkout@v3
-        with:
-          ref: ${{ inputs.ref }}
+        # with:
+        #   ref: ${{ inputs.ref }}
       - name: Configure Go Cache Key
         env:
-          CACHE_KEY: "${{ fromJson(inputs.version-set).go }}-${{ runner.os }}-${{ runner.arch }}"
+          CACHE_KEY: "v1.21.0-${{ runner.os }}-${{ runner.arch }}"
         run: echo "$CACHE_KEY" > .gocache.tmp
       - uses: actions/setup-go@v3
         with:
-          go-version: ${{ fromJson(inputs.version-set).go }}
+          go-version: 1.21.0
           cache: true
           cache-dependency-path: |
             pkg/go.sum
@@ -118,6 +123,7 @@ jobs:
           PULUMI_BUILD_MODE: ${{ inputs.enable-coverage && 'coverage' || 'normal' }}
         run: |
           set -euxo pipefail
+          echo $PULUMI_VERSION
           # Spurious, this command requires piping via stdin
           # shellcheck disable=SC2002
           cat .goreleaser.yml \
