@@ -9,6 +9,12 @@ replace github.com/sergi/go-diff => github.com/sergi/go-diff v1.1.0
 
 replace github.com/xanzy/ssh-agent => github.com/pulumi/ssh-agent v0.5.1
 
+// gocloud.dev@v0.27.0 requires
+//   github.com/prometheus/prometheus@v0.37.0 requires
+//   github.com/go-kit/kit@v0.10.0 requires
+//   sourcegraph.com/sourcegraph/appdash@v0.0.0-20190731080439-ebfcffb1b5c0
+replace sourcegraph.com/sourcegraph/appdash => github.com/pulumi/appdash v0.0.0-20231130102222-75f619a67231
+
 require (
 	cloud.google.com/go/logging v1.7.0
 	cloud.google.com/go/storage v1.30.1
